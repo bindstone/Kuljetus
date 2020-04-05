@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  # mongod --httpinterface
+  mongodb:
+    image: mongo:4.2.3
+    ports:
+      - 27017:27017
+      - 28017:28017
+    environment:
+      #- MONGO_INITDB_DATABASE=transport
+      #- MONGO_INITDB_ROOT_USERNAME=master
+      #- MONGO_INITDB_ROOT_PASSWORD=letmein
+      - AUTH=no
+    networks:
+      - esnet
+
+  mongo-admin:
+    image: mongo-express:0.54.0
+    ports:
+      - 8081:8081
+    networks:
+      - esnet
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+
+networks:
+  esnet:
+    driver: bridge

@@ -1,0 +1,27 @@
+React
+
+https://www.reactivemanifesto.org/
+
+https://projectreactor.io/
+
+https://github.com/reactor/reactor-core
+
+Global React documentations:
+
+https://rxmarbles.com/
+
+https://rxjs-dev.firebaseapp.com/guide/overview
+
+Mongo DB
+
+https://spring.io/guides/gs/accessing-data-mongodb/
+
+https://www.devglan.com/spring-boot/spring-boot-mongodb-crud
+
+https://www.simplethread.com/was-mongodb-ever-the-right-choice/
+
+http://mongodb-tools.com/
+
+Data
+
+https://data.public.lu/fr/datasets/parc-automobile-du-luxembourg/
