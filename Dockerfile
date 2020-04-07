@@ -14,5 +14,5 @@ RUN mvn clean package -P production
 FROM openjdk:14-jdk-buster
 WORKDIR /app
 VOLUME /tmp
-COPY --from=client-builder /app/target/actuator-client.jar /app/actuator-client.jar
-ENTRYPOINT ["java","-jar","./kuljetus-1.0.0-SNAPSHOT.jar"]
+COPY --from=client-builder /app/target/kuljetus-1.0.0-SNAPSHOT.jar /app/kuljetus.jar
+ENTRYPOINT ["java","-jar","./kuljetus.jar"]

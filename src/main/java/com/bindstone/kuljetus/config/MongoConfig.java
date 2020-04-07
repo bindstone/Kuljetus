@@ -3,6 +3,7 @@ package com.bindstone.kuljetus.config;
 import com.bindstone.kuljetus.repository.TransportRepository;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.config.AbstractReactiveMongoConfiguration;
@@ -12,6 +13,9 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 @EnableReactiveMongoRepositories(basePackageClasses = TransportRepository.class)
 public class MongoConfig extends AbstractReactiveMongoConfiguration {
 
+    @Value("${spring.data.mongodb.uri}")
+    String url;
+
     @Override
     protected String getDatabaseName() {
         return "transport";
@@ -20,6 +24,6 @@ public class MongoConfig extends AbstractReactiveMongoConfiguration {
     @Override
     @Bean
     public MongoClient reactiveMongoClient() {
-        return MongoClients.create();
+        return MongoClients.create(url);
     }
 }

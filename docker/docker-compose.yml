@@ -1,8 +1,9 @@
-version: '3'
+version: '3.7'
 
 services:
   # mongod --httpinterface
   mongodb:
+    hostname: mongodb
     image: mongo:4.2.3
     ports:
       - 27017:27017
@@ -16,6 +17,9 @@ services:
       - esnet
 
   mongo-admin:
+    depends_on:
+      - mongodb
+    hostname: mongo-admin
     image: mongo-express:0.54.0
     ports:
       - 8081:8081
@@ -24,6 +28,18 @@ services:
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongodb
       - ME_CONFIG_MONGODB_PORT=27017
+
+  app:
+    hostname: app
+    depends_on:
+      - mongodb
+    build: ../
+    ports:
+      - 8080:8080
+    networks:
+      - esnet
+    environment:
+      - spring_profiles_active=docker
 
 networks:
   esnet:
