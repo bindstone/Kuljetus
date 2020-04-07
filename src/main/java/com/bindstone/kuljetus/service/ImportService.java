@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.time.Duration;
@@ -26,20 +27,19 @@ public class ImportService {
         this.transportRepository = transportRepository;
     }
 
-    public void importData() throws FileNotFoundException, XMLStreamException {
+    public void importData(File file) throws FileNotFoundException, XMLStreamException {
         System.out.println("Start import data:");
         Instant start = Instant.now();
-        importDataExec();
+        importDataExec(file);
         Instant end = Instant.now();
 
         Duration interval = Duration.between(start, end);
         System.out.println("Execution time in seconds: " + interval.getSeconds());
     }
 
-    private void importDataExec() throws FileNotFoundException, XMLStreamException {
+    private void importDataExec(File file) throws FileNotFoundException, XMLStreamException {
 
-        //val fi = FileInputStream("/Users/qs/Documents/kotlin/KBase/data/sample.xml")
-        FileInputStream fi = new FileInputStream("/Users/qs/Documents/kotlin/KBase/data/parc-automobile-202003.xml");
+        FileInputStream fi = new FileInputStream(file);
 
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
         XMLEventReader reader = xmlInputFactory.createXMLEventReader(fi);

@@ -1,18 +1,34 @@
-React
+= Kuljetus
 
-https://www.reactivemanifesto.org/
+== Info
+
+This is a private POC build for testing the following purposes:
+
+* Reactive Development
+* MongoDB
+* Vaadin
+
+Feel free to take your experiences and to share. Join the: https://www.reactivemanifesto.org/
+
+== Local Links
+
+Application: http://127.0.0.1:8080
+
+Mongo Admin: http://127.0.0.1:8081
+
+== React
 
 https://projectreactor.io/
 
 https://github.com/reactor/reactor-core
 
-Global React documentations:
+== Global React documentations
 
 https://rxmarbles.com/
 
 https://rxjs-dev.firebaseapp.com/guide/overview
 
-Mongo DB
+== Mongo DB
 
 https://spring.io/guides/gs/accessing-data-mongodb/
 
@@ -22,6 +38,6 @@ https://www.simplethread.com/was-mongodb-ever-the-right-choice/
 
 http://mongodb-tools.com/
 
-Data
+== Data
 
 https://data.public.lu/fr/datasets/parc-automobile-du-luxembourg/

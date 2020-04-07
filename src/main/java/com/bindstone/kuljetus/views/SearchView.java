@@ -27,8 +27,8 @@ import java.util.Optional;
 @Route(value = "search", layout = MainView.class)
 @PageTitle("Search View")
 public class SearchView extends Div {
-    private final TransportService transportService;
     Logger logger = LoggerFactory.getLogger(SearchView.class);
+    private final TransportService transportService;
     private Grid<Transport> grid;
     private TextField marque;
     private TextField couleur;

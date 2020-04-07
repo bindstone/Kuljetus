@@ -15,4 +15,4 @@ FROM openjdk:14-jdk-buster
 WORKDIR /app
 VOLUME /tmp
 COPY --from=client-builder /app/target/kuljetus-1.0.0-SNAPSHOT.jar /app/kuljetus.jar
-ENTRYPOINT ["java","-jar","./kuljetus.jar"]
+ENTRYPOINT ["java","-jar -Xms1g -Xmx2g","./kuljetus.jar"]
