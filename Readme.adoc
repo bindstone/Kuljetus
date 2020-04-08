@@ -8,7 +8,7 @@ This is a private POC build for testing the following purposes:
 * MongoDB
 * Vaadin
 
-Feel free to take your experiences and to share. Join the: https://www.reactivemanifesto.org/
+Feel free to take your experiences and join the: https://www.reactivemanifesto.org/
 
 == Local Links
 

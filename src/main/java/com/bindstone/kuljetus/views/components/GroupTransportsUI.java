@@ -39,7 +39,7 @@ public class GroupTransportsUI extends HorizontalLayout {
         transportService.getMostWantedConstructor()
                 .publishOn(Schedulers.immediate())
                 .delayElements(Duration.ofSeconds(0))
-                .doOnError(throwable -> System.out.println(throwable.getMessage()))
+                .doOnError(throwable -> logger.error(throwable.getMessage()))
                 .subscribe(transport -> {
                     Optional<UI> ui = this.getUI();
                     if (ui.isPresent()) {

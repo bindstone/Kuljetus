@@ -2,6 +2,8 @@ package com.bindstone.kuljetus.service;
 
 import com.bindstone.kuljetus.domain.Transport;
 import com.bindstone.kuljetus.repository.TransportRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.xml.stream.XMLEventReader;
@@ -20,28 +22,28 @@ import java.util.List;
 
 @Service
 public class ImportService {
-
     private final TransportRepository transportRepository;
+    Logger logger = LoggerFactory.getLogger(ImportService.class);
 
     public ImportService(TransportRepository transportRepository) {
         this.transportRepository = transportRepository;
     }
 
     public void importData(File file) throws FileNotFoundException, XMLStreamException {
-        System.out.println("Start import data:");
+        logger.info("Start import data:");
         Instant start = Instant.now();
         importDataExec(file);
         Instant end = Instant.now();
 
         Duration interval = Duration.between(start, end);
-        System.out.println("Execution time in seconds: " + interval.getSeconds());
+        logger.info("Execution time in seconds: " + interval.getSeconds());
     }
 
     private void importDataExec(File file) throws FileNotFoundException, XMLStreamException {
 
-        FileInputStream fi = new FileInputStream(file);
-
         XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+
+        FileInputStream fi = new FileInputStream(file);
         XMLEventReader reader = xmlInputFactory.createXMLEventReader(fi);
 
         reader.nextEvent(); // Skip Title
@@ -76,7 +78,7 @@ public class ImportService {
                     if (list.size() > 1000) {
                         transportRepository.saveAll(list).blockLast();
                         list.clear();
-                        System.out.print(".");
+                        logger.info(".");
                     }
                 } else {
                     if (key != null && data != null) {

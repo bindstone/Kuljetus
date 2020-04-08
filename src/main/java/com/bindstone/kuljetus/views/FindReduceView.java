@@ -13,6 +13,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.scheduler.Schedulers;
 
 import java.time.Duration;
@@ -22,9 +24,9 @@ import java.util.Optional;
 @Route(value = "find-reduce", layout = MainView.class)
 @PageTitle("Find Reduce View")
 public class FindReduceView extends Div {
-
     private final TransportService transportService;
     private final Grid<TransportList> grid;
+    Logger logger = LoggerFactory.getLogger(FindReduceView.class);
     private ListDataProvider<TransportList> list;
 
     public FindReduceView(TransportService transportService) {
@@ -52,7 +54,7 @@ public class FindReduceView extends Div {
         transportService.getList()
                 .publishOn(Schedulers.immediate())
                 .delayElements(Duration.ofSeconds(0))
-                .doOnError(throwable -> System.out.println(throwable.getMessage()))
+                .doOnError(throwable -> logger.error(throwable.getMessage()))
                 .subscribe(transport -> {
                     Optional<UI> ui = this.getUI();
                     if (ui.isPresent()) {

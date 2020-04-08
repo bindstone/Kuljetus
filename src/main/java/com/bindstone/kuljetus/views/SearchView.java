@@ -27,8 +27,8 @@ import java.util.Optional;
 @Route(value = "search", layout = MainView.class)
 @PageTitle("Search View")
 public class SearchView extends Div {
-    Logger logger = LoggerFactory.getLogger(SearchView.class);
     private final TransportService transportService;
+    Logger logger = LoggerFactory.getLogger(SearchView.class);
     private Grid<Transport> grid;
     private TextField marque;
     private TextField couleur;
@@ -77,7 +77,7 @@ public class SearchView extends Div {
         transportService.find(query)
                 .publishOn(Schedulers.immediate())
                 .delayElements(Duration.ofSeconds(0))
-                .doOnError(throwable -> System.out.println(throwable.getMessage()))
+                .doOnError(throwable -> logger.error(throwable.getMessage()))
                 .subscribe(transport -> {
                     logger.info("{}", transport);
                     Optional<UI> ui = this.getUI();
