@@ -1,6 +1,6 @@
 package com.bindstone.kuljetus.views.components;
 
-import com.bindstone.kuljetus.domain.TransportCount;
+import com.bindstone.kuljetus.domain.LibelleMarqueCount;
 import com.bindstone.kuljetus.service.TransportService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
@@ -15,19 +15,20 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class GroupTransportsUI extends HorizontalLayout {
-    private final Grid<TransportCount> grid;
-    Logger logger = LoggerFactory.getLogger(GroupTransportsUI.class);
-    private ListDataProvider<TransportCount> list;
+public class GroupMarqueUI extends HorizontalLayout {
+    private final Grid<LibelleMarqueCount> grid;
+    Logger logger = LoggerFactory.getLogger(GroupMarqueUI.class);
+    private ListDataProvider<LibelleMarqueCount> list;
 
-    public GroupTransportsUI(TransportService transportService) {
+    public GroupMarqueUI(TransportService transportService) {
 
-        setId("group-transport-ui");
+        setId("group-marque-ui");
         setWidth("500px");
         setHeight("200px");
+        setMargin(true);
 
         list = new ListDataProvider<>(new ArrayList<>());
-        grid = new Grid<>(TransportCount.class);
+        grid = new Grid<>(LibelleMarqueCount.class);
 
         grid.setColumns("libelleMarque", "count");
         grid.setDataProvider(list);
@@ -36,7 +37,7 @@ public class GroupTransportsUI extends HorizontalLayout {
 
         add(grid);
 
-        transportService.getMostWantedConstructor()
+        transportService.getCountByMarque()
                 .publishOn(Schedulers.immediate())
                 .delayElements(Duration.ofSeconds(0))
                 .doOnError(throwable -> logger.error(throwable.getMessage()))

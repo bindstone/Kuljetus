@@ -1,7 +1,8 @@
 package com.bindstone.kuljetus.service;
 
 import com.bindstone.kuljetus.domain.Transport;
-import com.bindstone.kuljetus.repository.TransportRepository;
+import com.bindstone.kuljetus.domain.enumeration.Categorie;
+import com.bindstone.kuljetus.repository.primary.TransportPrimaryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,11 @@ import java.util.List;
 
 @Service
 public class ImportService {
-    private final TransportRepository transportRepository;
+    private final TransportPrimaryRepository transportPrimaryRepository;
     Logger logger = LoggerFactory.getLogger(ImportService.class);
 
-    public ImportService(TransportRepository transportRepository) {
-        this.transportRepository = transportRepository;
+    public ImportService(TransportPrimaryRepository transportPrimaryRepository) {
+        this.transportPrimaryRepository = transportPrimaryRepository;
     }
 
     public void importData(File file) throws FileNotFoundException, XMLStreamException {
@@ -76,7 +77,7 @@ public class ImportService {
                     transport = new Transport();
 
                     if (list.size() > 1000) {
-                        transportRepository.saveAll(list).blockLast();
+                        transportPrimaryRepository.saveAll(list).blockLast();
                         list.clear();
                         logger.info(".");
                     }
@@ -90,7 +91,7 @@ public class ImportService {
                                 transport.setCodeOperation(data);
                                 break;
                             case "CATSTC":
-                                transport.setCodeCategorieStatec(data);
+                                transport.setCategorieStatec(Categorie.byCode(data));
                                 break;
                             case "CODCAR":
                                 transport.setCodeCarrosserieEuropeen(data);
@@ -135,7 +136,7 @@ public class ImportService {
                                 transport.setDatePremiereMiseEnCirculationLuxembourg(data);
                                 break;
                             case "DATCIR":
-                                transport.setdateMiseEnCirculationParProprietaire(data);
+                                transport.setDateMiseEnCirculationParProprietaire(data);
                                 break;
                             case "DATHORCIR":
                                 transport.setDateMiseHorsCirculation(data);
@@ -270,6 +271,6 @@ public class ImportService {
                 }
             }
         }
-        transportRepository.saveAll(list).blockLast();
+        transportPrimaryRepository.saveAll(list).blockLast();
     }
 }

@@ -1,5 +1,6 @@
 package com.bindstone.kuljetus.domain;
 
+import com.bindstone.kuljetus.domain.enumeration.Categorie;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,7 +12,7 @@ public class Transport {
     @Id
     private String numeroPVR;
     private String codeOperation;
-    private String codeCategorieStatec;
+    private Categorie categorieStatec;
     private String codeCarrosserieEuropeen;
     private String libelleCarrosserie;
     private String codeCategorieEuropeenne;
@@ -70,6 +71,14 @@ public class Transport {
     private String consommationEnergieElectrique;
     private String autonomieModeElectrique;
 
+    public String getNumeroPVR() {
+        return numeroPVR;
+    }
+
+    public void setNumeroPVR(String numeroPVR) {
+        this.numeroPVR = numeroPVR;
+    }
+
     public String getCodeOperation() {
         return codeOperation;
     }
@@ -78,12 +87,12 @@ public class Transport {
         this.codeOperation = codeOperation;
     }
 
-    public String getCodeCategorieStatec() {
-        return codeCategorieStatec;
+    public Categorie getCategorieStatec() {
+        return categorieStatec;
     }
 
-    public void setCodeCategorieStatec(String codeCategorieStatec) {
-        this.codeCategorieStatec = codeCategorieStatec;
+    public void setCategorieStatec(Categorie categorieStatec) {
+        this.categorieStatec = categorieStatec;
     }
 
     public String getCodeCarrosserieEuropeen() {
@@ -166,14 +175,6 @@ public class Transport {
         this.designationCommerciale = designationCommerciale;
     }
 
-    public String getNumeroPVR() {
-        return numeroPVR;
-    }
-
-    public void setNumeroPVR(String numeroPVR) {
-        this.numeroPVR = numeroPVR;
-    }
-
     public String getVariantePVR() {
         return variantePVR;
     }
@@ -206,11 +207,11 @@ public class Transport {
         this.datePremiereMiseEnCirculationLuxembourg = datePremiereMiseEnCirculationLuxembourg;
     }
 
-    public String getdateMiseEnCirculationParProprietaire() {
+    public String getDateMiseEnCirculationParProprietaire() {
         return dateMiseEnCirculationParProprietaire;
     }
 
-    public void setdateMiseEnCirculationParProprietaire(String dateMiseEnCirculationParProprietaire) {
+    public void setDateMiseEnCirculationParProprietaire(String dateMiseEnCirculationParProprietaire) {
         this.dateMiseEnCirculationParProprietaire = dateMiseEnCirculationParProprietaire;
     }
 
@@ -554,7 +555,7 @@ public class Transport {
     public String toString() {
         return new StringJoiner(",", "[", "]")
                 .add("codeOperation='" + codeOperation + "'")
-                .add("codeCategorieStatec='" + codeCategorieStatec + "'")
+                .add("codeCategorieStatec='" + categorieStatec.getCode() + "'")
                 .add("codeCarrosserieEuropeen='" + codeCarrosserieEuropeen + "'")
                 .add("libelleCarrosserie='" + libelleCarrosserie + "'")
                 .add("codeCategorieEuropeenne='" + codeCategorieEuropeenne + "'")

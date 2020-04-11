@@ -2,7 +2,7 @@ package com.bindstone.kuljetus.domain;
 
 import java.util.StringJoiner;
 
-public class TransportCount {
+public class LibelleMarqueCount {
 
     Long count;
     private String libelleMarque;
