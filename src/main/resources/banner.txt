@@ -8,6 +8,4 @@
 ${Ansi.WHITE}----------------------------------------------------------------------------------------------------
 ${Ansi.WHITE}   Spring     ${Ansi.GREEN} ${spring-boot.version}
 ${Ansi.WHITE}   Java       ${Ansi.GREEN} ${java.version}
-${Ansi.WHITE}   Profiles   ${Ansi.GREEN} ${spring.profiles.active}
-${Ansi.WHITE}   Mongo      ${Ansi.GREEN} ${spring.data.mongodb.uri}
 ${Ansi.WHITE}----------------------------------------------------------------------------------------------------

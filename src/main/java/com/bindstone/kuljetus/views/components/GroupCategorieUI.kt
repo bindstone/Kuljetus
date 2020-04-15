@@ -1,59 +1,50 @@
-package com.bindstone.kuljetus.views.components;
+package com.bindstone.kuljetus.views.components
 
-import com.bindstone.kuljetus.domain.CategorieCount;
-import com.bindstone.kuljetus.service.TransportService;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reactor.core.scheduler.Schedulers;
+import com.bindstone.kuljetus.domain.CategorieCount
+import com.bindstone.kuljetus.service.TransportService
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.grid.GridVariant
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.data.provider.ListDataProvider
+import com.vaadin.flow.function.ValueProvider
+import org.slf4j.LoggerFactory
+import reactor.core.scheduler.Schedulers
+import java.time.Duration
+import java.util.*
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Optional;
+class GroupCategorieUI(transportService: TransportService) : HorizontalLayout() {
+    private val grid: Grid<CategorieCount>
+    var logger = LoggerFactory.getLogger(GroupCategorieUI::class.java)
+    private val list: ListDataProvider<CategorieCount>
 
-public class GroupCategorieUI extends HorizontalLayout {
-    private final Grid<CategorieCount> grid;
-    Logger logger = LoggerFactory.getLogger(GroupCategorieUI.class);
-    private ListDataProvider<CategorieCount> list;
-
-    public GroupCategorieUI(TransportService transportService) {
-
-        setId("group-categorie-ui");
-        setWidth("500px");
-        setHeight("200px");
-        setMargin(true);
-
-        list = new ListDataProvider<>(new ArrayList<>());
-        grid = new Grid<>();
-
-        grid.addColumn(categorieCount -> categorieCount.getCategorieStatec().getLabel()).setHeader("Categorie");
-        grid.addColumn(CategorieCount::getCount).setHeader("Count");
-
-        grid.setDataProvider(list);
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
-        grid.setSizeFull();
-
-        add(grid);
-
-        transportService.getCountByCategorie()
+    init {
+        setId("group-categorie-ui")
+        width = "500px"
+        height = "200px"
+        isMargin = true
+        list = ListDataProvider(ArrayList())
+        grid = Grid()
+        grid.addColumn(ValueProvider<CategorieCount, Any> { categorieCount: CategorieCount -> categorieCount.categorieStatec!!.label }).setHeader("Categorie")
+        grid.addColumn(CategorieCount::count).setHeader("Count")
+        grid.dataProvider = list
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES)
+        grid.setSizeFull()
+        add(grid)
+        transportService.countByCategorie
                 .publishOn(Schedulers.immediate())
                 .delayElements(Duration.ofSeconds(0))
-                .doOnError(throwable -> logger.error(throwable.getMessage()))
-                .subscribe(transport -> {
-                    Optional<UI> ui = this.getUI();
-                    if (ui.isPresent()) {
-                        ui.get().access(() -> {
-                            list.getItems().add(transport);
-                            this.grid.getDataProvider().refreshAll();
-                        });
+                .doOnError { throwable: Throwable -> logger.error(throwable.message) }
+                .subscribe { transport: CategorieCount ->
+                    val ui = this.ui
+                    if (ui.isPresent) {
+                        ui.get().access {
+                            list.items.add(transport)
+                            grid.dataProvider.refreshAll()
+                        }
                     } else {
-                        list.getItems().add(transport);
-                        this.grid.getDataProvider().refreshAll();
+                        list.items.add(transport)
+                        grid.dataProvider.refreshAll()
                     }
-                });
+                }
     }
 }

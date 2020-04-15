@@ -1,34 +1,15 @@
-package com.bindstone.kuljetus.domain;
+package com.bindstone.kuljetus.domain
 
+import java.util.*
 
-import java.util.StringJoiner;
+class CarburantCount {
+    var count: Long? = null
+    var libelleCarburant: String? = null
 
-public class CarburantCount {
-
-    Long count;
-    private String libelleCarburant;
-
-    public String getLibelleCarburant() {
-        return libelleCarburant;
-    }
-
-    public void setLibelleCarburant(String libelleCarburant) {
-        this.libelleCarburant = libelleCarburant;
-    }
-
-    public Long getCount() {
-        return count;
-    }
-
-    public void setCount(Long count) {
-        this.count = count;
-    }
-
-    @Override
-    public String toString() {
-        return new StringJoiner(",", "[", "]")
-                .add("libelleCarburant='" + libelleCarburant + "'")
-                .add("count='" + count + "'")
-                .toString().concat("\n");
+    override fun toString(): String {
+        return StringJoiner(",", "[", "]")
+                .add("libelleCarburant='$libelleCarburant'")
+                .add("count='$count'")
+                .toString() + "\n"
     }
 }

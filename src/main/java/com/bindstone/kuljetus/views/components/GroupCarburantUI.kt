@@ -1,60 +1,49 @@
-package com.bindstone.kuljetus.views.components;
+package com.bindstone.kuljetus.views.components
 
-import com.bindstone.kuljetus.domain.CarburantCount;
-import com.bindstone.kuljetus.service.TransportService;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.GridVariant;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import reactor.core.scheduler.Schedulers;
+import com.bindstone.kuljetus.domain.CarburantCount
+import com.bindstone.kuljetus.service.TransportService
+import com.vaadin.flow.component.grid.Grid
+import com.vaadin.flow.component.grid.GridVariant
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import com.vaadin.flow.data.provider.ListDataProvider
+import org.slf4j.LoggerFactory
+import reactor.core.scheduler.Schedulers
+import java.time.Duration
+import java.util.*
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Optional;
+class GroupCarburantUI(transportService: TransportService) : HorizontalLayout() {
+    private val grid: Grid<CarburantCount>
+    var logger = LoggerFactory.getLogger(GroupCarburantUI::class.java)
+    private val list: ListDataProvider<CarburantCount>
 
-public class GroupCarburantUI extends HorizontalLayout {
-    private final Grid<CarburantCount> grid;
-    Logger logger = LoggerFactory.getLogger(GroupCarburantUI.class);
-    private ListDataProvider<CarburantCount> list;
-
-    public GroupCarburantUI(TransportService transportService) {
-
-        setId("group-carburant-ui");
-        setWidth("500px");
-        setHeight("200px");
-        setMargin(true);
-
-        list = new ListDataProvider<>(new ArrayList<>());
-        grid = new Grid<>(CarburantCount.class);
-
-        grid.setColumns("libelleCarburant", "count");
-
-        grid.setDataProvider(list);
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
-        grid.setSizeFull();
-
-        add(grid);
-
-        transportService.getCountByCarburant()
+    init {
+        setId("group-carburant-ui")
+        width = "500px"
+        height = "200px"
+        isMargin = true
+        list = ListDataProvider(ArrayList())
+        grid = Grid(CarburantCount::class.java)
+        grid.setColumns("libelleCarburant", "count")
+        grid.dataProvider = list
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES)
+        grid.setSizeFull()
+        add(grid)
+        transportService.countByCarburant
                 .publishOn(Schedulers.immediate())
                 .delayElements(Duration.ofSeconds(0))
-                .doOnError(throwable -> logger.error(throwable.getMessage()))
-                .subscribe(transport -> {
-                    logger.info(transport.toString());
-                    Optional<UI> ui = this.getUI();
-                    if (ui.isPresent()) {
-                        ui.get().access(() -> {
-
-                            list.getItems().add(transport);
-                            this.grid.getDataProvider().refreshAll();
-                        });
+                .doOnError { throwable: Throwable -> logger.error(throwable.message) }
+                .subscribe { transport: CarburantCount ->
+                    logger.info(transport.toString())
+                    val ui = this.ui
+                    if (ui.isPresent) {
+                        ui.get().access {
+                            list.items.add(transport)
+                            grid.dataProvider.refreshAll()
+                        }
                     } else {
-                        list.getItems().add(transport);
-                        this.grid.getDataProvider().refreshAll();
+                        list.items.add(transport)
+                        grid.dataProvider.refreshAll()
                     }
-                });
+                }
     }
 }

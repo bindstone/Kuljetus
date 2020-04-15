@@ -1,14 +1,11 @@
-package com.bindstone.kuljetus;
+package com.bindstone.kuljetus
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
 
-@SpringBootApplication
-public class Application extends SpringBootServletInitializer {
+@SpringBootApplication(scanBasePackages = ["com.bindstone.kuljetus"])
+open class Application
 
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-    }
-
+fun main(args: Array<String>) {
+        SpringApplication.run(Application::class.java, *args)
 }

@@ -1,34 +1,25 @@
-package com.bindstone.kuljetus.views.components;
+package com.bindstone.kuljetus.views.components
 
-import com.bindstone.kuljetus.service.TransportService;
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.bindstone.kuljetus.service.TransportService
+import com.vaadin.flow.component.html.Label
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout
+import org.slf4j.LoggerFactory
 
-import java.util.Optional;
+class TotalTransportsUI(transportService: TransportService) : HorizontalLayout() {
+    var logger = LoggerFactory.getLogger(TotalTransportsUI::class.java)
 
-public class TotalTransportsUI extends HorizontalLayout {
-    Logger logger = LoggerFactory.getLogger(TotalTransportsUI.class);
-
-    public TotalTransportsUI(TransportService transportService) {
-        setId("total-transport-ui");
-
-        Label label = new Label("Count of Transports:");
-
-        this.add(label);
-
-        transportService.countTransports().subscribe(count -> {
-            logger.debug("Count Transport [{}]", count);
-            Optional<UI> ui = this.getUI();
-            if (ui.isPresent()) {
-                ui.get().access(() -> {
-                    label.setText("Count of Transports: " + count);
-                });
+    init {
+        setId("total-transport-ui")
+        val label = Label("Count of Transports:")
+        this.add(label)
+        transportService.countTransports().subscribe { count: Long ->
+            logger.debug("Count Transport [{}]", count)
+            val ui = this.ui
+            if (ui.isPresent) {
+                ui.get().access { label.text = "Count of Transports: $count" }
             } else {
-                label.setText("Count of Transports: " + count);
+                label.text = "Count of Transports: $count"
             }
-        });
+        }
     }
 }

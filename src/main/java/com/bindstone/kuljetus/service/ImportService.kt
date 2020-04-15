@@ -1,276 +1,136 @@
-package com.bindstone.kuljetus.service;
+package com.bindstone.kuljetus.service
 
-import com.bindstone.kuljetus.domain.Transport;
-import com.bindstone.kuljetus.domain.enumeration.Categorie;
-import com.bindstone.kuljetus.repository.primary.TransportPrimaryRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import com.bindstone.kuljetus.domain.Transport
+import com.bindstone.kuljetus.domain.enumeration.Categorie.Companion.byCode
+import com.bindstone.kuljetus.repository.primary.TransportPrimaryRepository
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.time.Duration
+import java.time.Instant
+import java.util.*
+import javax.xml.stream.XMLInputFactory
+import javax.xml.stream.XMLStreamException
 
 @Service
-public class ImportService {
-    private final TransportPrimaryRepository transportPrimaryRepository;
-    Logger logger = LoggerFactory.getLogger(ImportService.class);
+class ImportService(private val transportPrimaryRepository: TransportPrimaryRepository) {
+    var logger = LoggerFactory.getLogger(ImportService::class.java)
 
-    public ImportService(TransportPrimaryRepository transportPrimaryRepository) {
-        this.transportPrimaryRepository = transportPrimaryRepository;
+    @Throws(FileNotFoundException::class, XMLStreamException::class)
+    fun importData(file: File) {
+        logger.info("Start import data:")
+        val start = Instant.now()
+        importDataExec(file)
+        val end = Instant.now()
+        val interval = Duration.between(start, end)
+        logger.info("Execution time in seconds: " + interval.seconds)
     }
 
-    public void importData(File file) throws FileNotFoundException, XMLStreamException {
-        logger.info("Start import data:");
-        Instant start = Instant.now();
-        importDataExec(file);
-        Instant end = Instant.now();
-
-        Duration interval = Duration.between(start, end);
-        logger.info("Execution time in seconds: " + interval.getSeconds());
-    }
-
-    private void importDataExec(File file) throws FileNotFoundException, XMLStreamException {
-
-        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
-
-        FileInputStream fi = new FileInputStream(file);
-        XMLEventReader reader = xmlInputFactory.createXMLEventReader(fi);
-
-        reader.nextEvent(); // Skip Title
-        reader.nextEvent(); // Skip Header
-
-        List list = new ArrayList<Transport>();
-        String key = null;
-        String data = null;
-        Transport transport = new Transport();
-
+    @Throws(FileNotFoundException::class, XMLStreamException::class)
+    private fun importDataExec(file: File) {
+        val xmlInputFactory = XMLInputFactory.newInstance()
+        val fi = FileInputStream(file)
+        val reader = xmlInputFactory.createXMLEventReader(fi)
+        reader.nextEvent() // Skip Title
+        reader.nextEvent() // Skip Header
+        val list: MutableList<Transport> = ArrayList<Transport>()
+        var key: String? = null
+        var data: String? = null
+        var transport = Transport()
         while (reader.hasNext()) {
-            XMLEvent nextEvent = reader.nextEvent();
-
-            if (nextEvent.isStartElement()) {
-                StartElement elem = nextEvent.asStartElement();
-                if (!"VEHICLE".equals(elem.getName().toString())) {
-                    key = elem.getName().toString();
+            val nextEvent = reader.nextEvent()
+            if (nextEvent.isStartElement) {
+                val elem = nextEvent.asStartElement()
+                if ("VEHICLE" != elem.name.toString()) {
+                    key = elem.name.toString()
                 }
             }
-
-            if (nextEvent.isCharacters()) {
-                data = nextEvent.asCharacters().getData();
+            if (nextEvent.isCharacters) {
+                data = nextEvent.asCharacters().data
             }
-
-            if (nextEvent.isEndElement()) {
-                EndElement elem = nextEvent.asEndElement();
-                if ("VEHICLE".equals(elem.getName().toString())) {
-
-                    list.add(transport);
-                    transport = new Transport();
-
-                    if (list.size() > 1000) {
-                        transportPrimaryRepository.saveAll(list).blockLast();
-                        list.clear();
-                        logger.info(".");
+            if (nextEvent.isEndElement) {
+                val elem = nextEvent.asEndElement()
+                if ("VEHICLE" == elem.name.toString()) {
+                    list.add(transport)
+                    transport = Transport()
+                    if (list.size > 1000) {
+                        transportPrimaryRepository.saveAll<Transport>(list).blockLast()
+                        list.clear()
+                        logger.info(".")
                     }
                 } else {
                     if (key != null && data != null) {
-                        switch (key) {
-                            case "PVRNUM":
-                                transport.setNumeroPVR(data);
-                                break;
-                            case "OPE":
-                                transport.setCodeOperation(data);
-                                break;
-                            case "CATSTC":
-                                transport.setCategorieStatec(Categorie.byCode(data));
-                                break;
-                            case "CODCAR":
-                                transport.setCodeCarrosserieEuropeen(data);
-                                break;
-                            case "LIBCAR":
-                                transport.setLibelleCarrosserie(data);
-                                break;
-                            case "CATEU":
-                                transport.setCodeCategorieEuropeenne(data);
-                                break;
-                            case "COUL":
-                                transport.setCouleur(data);
-                                break;
-                            case "INDUTI":
-                                transport.setIndicationUtilisation(data);
-                                break;
-                            case "PAYPVN":
-                                transport.setCodeDuPaysDeProvenance(data);
-                                break;
-                            case "CODMRQ":
-                                transport.setCodeMarque(data);
-                                break;
-                            case "LIBMRQ":
-                                transport.setLibelleMarque(data);
-                                break;
-                            case "TYPUSI":
-                                transport.setTypeUsine(data);
-                                break;
-                            case "TYPCOM":
-                                transport.setDesignationCommerciale(data);
-                                break;
-                            case "PVRVAR":
-                                transport.setVariantePVR(data);
-                                break;
-                            case "PVRVER":
-                                transport.setVersionPVR(data);
-                                break;
-                            case "DATCIRPRM":
-                                transport.setDatePremiereMiseEncirculation(data);
-                                break;
-                            case "DATCIR_GD":
-                                transport.setDatePremiereMiseEnCirculationLuxembourg(data);
-                                break;
-                            case "DATCIR":
-                                transport.setDateMiseEnCirculationParProprietaire(data);
-                                break;
-                            case "DATHORCIR":
-                                transport.setDateMiseHorsCirculation(data);
-                                break;
-                            case "MVID":
-                                transport.setMasseVide(data);
-                                break;
-                            case "MMA":
-                                transport.setMasseMaximaleAutorisee(data);
-                                break;
-                            case "MMAENS":
-                                transport.setMmaEnsemble(data);
-                                break;
-                            case "MMAATT":
-                                transport.setMmaPointAttelage(data);
-                                break;
-                            case "MMARSF":
-                                transport.setMasseRemorquableSansFreinage(data);
-                                break;
-                            case "MMARAF":
-                                transport.setMasseRemorquableAvecFreinage(data);
-                                break;
-                            case "I4X4":
-                                transport.setIndicateur4x4(data);
-                                break;
-                            case "ABS":
-                                transport.setIndicateurABS(data);
-                                break;
-                            case "ASR":
-                                transport.setIndicateurASR(data);
-                                break;
-                            case "PLAAVA":
-                                transport.setNombrePlacesAvant(data);
-                                break;
-                            case "PLAARR":
-                                transport.setNombrePlacesArriere(data);
-                                break;
-                            case "PLASAV":
-                                transport.setNombreSpecifiqueAvant(data);
-                                break;
-                            case "PLASAR":
-                                transport.setNombreSpecifiqueArriere(data);
-                                break;
-                            case "PLADEB":
-                                transport.setPlacesDebout(data);
-                                break;
-                            case "PLAASS":
-                                transport.setPlacesAssises(data);
-                                break;
-                            case "LON":
-                                transport.setLongueur(data);
-                                break;
-                            case "LAR":
-                                transport.setLargeur(data);
-                                break;
-                            case "HAU":
-                                transport.setHauteur(data);
-                                break;
-                            case "ESSIM":
-                                transport.setNombreEssieuxSimples(data);
-                                break;
-                            case "ESTAN":
-                                transport.setNombreEssieuxTandem(data);
-                                break;
-                            case "ESTRI":
-                                transport.setNombreEssieuxTridem(data);
-                                break;
-                            case "EMPMAX":
-                                transport.setEmpattementMaximal(data);
-                                break;
-                            case "LARES1":
-                                transport.setLargeurVoieEssieu1(data);
-                                break;
-                            case "LARES2":
-                                transport.setLargeurVoieEssieu2(data);
-                                break;
-                            case "TYPMOT":
-                                transport.setTypeMoteur(data);
-                                break;
-                            case "CODCRB":
-                                transport.setCodeCarburant(data);
-                                break;
-                            case "LIBCRB":
-                                transport.setLibelleCarburant(data);
-                                break;
-                            case "NBRCYL":
-                                transport.setNombreCylindres(data);
-                                break;
-                            case "PKW":
-                                transport.setPuissance(data);
-                                break;
-                            case "CYD":
-                                transport.setCylindree(data);
-                                break;
-                            case "INFOUTI":
-                                transport.setInfoUtilisateur(data);
-                                break;
-                            case "INFCO2":
-                                transport.setEmissionsCO2_g_km(data);
-                                break;
-                            case "L100KM":
-                                transport.setConsommation_l_100km(data);
-                                break;
-                            case "INFPARTICULE":
-                                transport.setEmissionParticules_g_km(data);
-                                break;
-                            case "INFNOX":
-                                transport.setEmissionsNox_g_km(data);
-                                break;
-                            case "EUNORM":
-                                transport.setEuronorme(data);
-                                break;
-                            case "mWLTP":
-                                transport.setMasseWLTP(data);
-                                break;
-                            case "CO2WLTP":
-                                transport.setEmissionsCO2_g_km_WLTP(data);
-                                break;
-                            case "eWLTP":
-                                transport.setEmissionsCO2_EcoInno_g_km_WLTP(data);
-                                break;
-                            case "CONSELEC":
-                                transport.setConsommationEnergieElectrique(data);
-                                break;
-                            case "AUTOELEC":
-                                transport.setAutonomieModeElectrique(data);
-                                break;
+                        when (key) {
+                            "PVRNUM" -> transport.numeroPVR = data
+                            "OPE" -> transport.codeOperation = data
+                            "CATSTC" -> transport.categorieStatec = byCode(data)
+                            "CODCAR" -> transport.codeCarrosserieEuropeen = data
+                            "LIBCAR" -> transport.libelleCarrosserie = data
+                            "CATEU" -> transport.codeCategorieEuropeenne = data
+                            "COUL" -> transport.couleur = data
+                            "INDUTI" -> transport.indicationUtilisation = data
+                            "PAYPVN" -> transport.codeDuPaysDeProvenance = data
+                            "CODMRQ" -> transport.codeMarque = data
+                            "LIBMRQ" -> transport.libelleMarque = data
+                            "TYPUSI" -> transport.typeUsine = data
+                            "TYPCOM" -> transport.designationCommerciale = data
+                            "PVRVAR" -> transport.variantePVR = data
+                            "PVRVER" -> transport.versionPVR = data
+                            "DATCIRPRM" -> transport.datePremiereMiseEncirculation = data
+                            "DATCIR_GD" -> transport.datePremiereMiseEnCirculationLuxembourg = data
+                            "DATCIR" -> transport.dateMiseEnCirculationParProprietaire = data
+                            "DATHORCIR" -> transport.dateMiseHorsCirculation = data
+                            "MVID" -> transport.masseVide = data
+                            "MMA" -> transport.masseMaximaleAutorisee = data
+                            "MMAENS" -> transport.mmaEnsemble = data
+                            "MMAATT" -> transport.mmaPointAttelage = data
+                            "MMARSF" -> transport.masseRemorquableSansFreinage = data
+                            "MMARAF" -> transport.masseRemorquableAvecFreinage = data
+                            "I4X4" -> transport.indicateur4x4 = data
+                            "ABS" -> transport.indicateurABS = data
+                            "ASR" -> transport.indicateurASR = data
+                            "PLAAVA" -> transport.nombrePlacesAvant = data
+                            "PLAARR" -> transport.nombrePlacesArriere = data
+                            "PLASAV" -> transport.nombreSpecifiqueAvant = data
+                            "PLASAR" -> transport.nombreSpecifiqueArriere = data
+                            "PLADEB" -> transport.placesDebout = data
+                            "PLAASS" -> transport.placesAssises = data
+                            "LON" -> transport.longueur = data
+                            "LAR" -> transport.largeur = data
+                            "HAU" -> transport.hauteur = data
+                            "ESSIM" -> transport.nombreEssieuxSimples = data
+                            "ESTAN" -> transport.nombreEssieuxTandem = data
+                            "ESTRI" -> transport.nombreEssieuxTridem = data
+                            "EMPMAX" -> transport.empattementMaximal = data
+                            "LARES1" -> transport.largeurVoieEssieu1 = data
+                            "LARES2" -> transport.largeurVoieEssieu2 = data
+                            "TYPMOT" -> transport.typeMoteur = data
+                            "CODCRB" -> transport.codeCarburant = data
+                            "LIBCRB" -> transport.libelleCarburant = data
+                            "NBRCYL" -> transport.nombreCylindres = data
+                            "PKW" -> transport.puissance = data
+                            "CYD" -> transport.cylindree = data
+                            "INFOUTI" -> transport.infoUtilisateur = data
+                            "INFCO2" -> transport.emissionsCO2_g_km = data
+                            "L100KM" -> transport.consommation_l_100km = data
+                            "INFPARTICULE" -> transport.emissionParticules_g_km = data
+                            "INFNOX" -> transport.emissionsNox_g_km = data
+                            "EUNORM" -> transport.euronorme = data
+                            "mWLTP" -> transport.masseWLTP = data
+                            "CO2WLTP" -> transport.emissionsCO2_g_km_WLTP = data
+                            "eWLTP" -> transport.emissionsCO2_EcoInno_g_km_WLTP = data
+                            "CONSELEC" -> transport.consommationEnergieElectrique = data
+                            "AUTOELEC" -> transport.autonomieModeElectrique = data
                         }
                     }
-                    key = null;
-                    data = null;
+                    key = null
+                    data = null
                 }
             }
         }
-        transportPrimaryRepository.saveAll(list).blockLast();
+        transportPrimaryRepository.saveAll<Transport>(list).blockLast()
     }
+
 }

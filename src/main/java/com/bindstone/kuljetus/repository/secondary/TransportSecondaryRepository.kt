@@ -1,7 +1,6 @@
-package com.bindstone.kuljetus.repository.secondary;
+package com.bindstone.kuljetus.repository.secondary
 
-import com.bindstone.kuljetus.domain.Transport;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import com.bindstone.kuljetus.domain.Transport
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository
 
-public interface TransportSecondaryRepository extends ReactiveMongoRepository<Transport, String> {
-}
+interface TransportSecondaryRepository : ReactiveMongoRepository<Transport, String>

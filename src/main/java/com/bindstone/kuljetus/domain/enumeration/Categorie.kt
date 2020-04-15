@@ -1,6 +1,6 @@
-package com.bindstone.kuljetus.domain.enumeration;
+package com.bindstone.kuljetus.domain.enumeration
 
-public enum Categorie {
+enum class Categorie(val code: String, val label: String) {
     SANS_CODE("00", "Sans code"),
     CYCLOMOTEUR("01", "Cyclomoteur"),
     MOTOCYCLE("02", "Motocycle"),
@@ -22,78 +22,32 @@ public enum Categorie {
     QUADRICYCLE_LEGER("53", "Quadricycle léger"),
     AUTRE_REMORQUE("59", "Autre remorque");
 
-    private String code;
-    private String label;
-
-    Categorie(String code, String label) {
-        this.code = code;
-        this.label = label;
-    }
-
-    public static Categorie byCode(String code) {
-        if (code == null) {
-            return null;
-        }
-
-        switch (code) {
-            case "0":
-            case "00":
-                return SANS_CODE;
-            case "1":
-            case "01":
-                return CYCLOMOTEUR;
-            case "2":
-            case "02":
-                return MOTOCYCLE;
-            case "5":
-            case "05":
-                return VOITURE_PARTICULIERE;
-            case "6":
-            case "06":
-                return VOITURE_USAGE_MIXTE;
-            case "7":
-            case "07":
-                return VEHICULE_UTILITAIRE;
-            case "9":
-            case "09":
-                return AUTOBUS_AUTOCAR;
-            case "11":
-                return CAMIONNETTE;
-            case "12":
-                return CAMION;
-            case "21":
-                return TRACTEUR_ROUTIER;
-            case "29":
-                return VEHICULE_SPECIAL;
-            case "31":
-                return TRACTEUR_AGRICOLE;
-            case "32":
-                return MACHINE_AGRICOLE;
-            case "39":
-                return AUTO_VEHICULE_AUTOMOTEUR;
-            case "41":
-                return REMORQUE_MARCHANDISE;
-            case "42":
-                return SEMI_REMORQUE;
-            case "51":
-                return TRICYCLE;
-            case "52":
-                return QUADRICYCLE;
-            case "53":
-                return QUADRICYCLE_LEGER;
-            case "59":
-                return AUTRE_REMORQUE;
-            default:
-                throw new RuntimeException("Code [" + code + "] does not exists");
+    companion object {
+        @kotlin.jvm.JvmStatic
+        fun byCode(code: String): Categorie {
+            return when (code) {
+                "0", "00" -> SANS_CODE
+                "1", "01" -> CYCLOMOTEUR
+                "2", "02" -> MOTOCYCLE
+                "5", "05" -> VOITURE_PARTICULIERE
+                "6", "06" -> VOITURE_USAGE_MIXTE
+                "7", "07" -> VEHICULE_UTILITAIRE
+                "9", "09" -> AUTOBUS_AUTOCAR
+                "11" -> CAMIONNETTE
+                "12" -> CAMION
+                "21" -> TRACTEUR_ROUTIER
+                "29" -> VEHICULE_SPECIAL
+                "31" -> TRACTEUR_AGRICOLE
+                "32" -> MACHINE_AGRICOLE
+                "39" -> AUTO_VEHICULE_AUTOMOTEUR
+                "41" -> REMORQUE_MARCHANDISE
+                "42" -> SEMI_REMORQUE
+                "51" -> TRICYCLE
+                "52" -> QUADRICYCLE
+                "53" -> QUADRICYCLE_LEGER
+                "59" -> AUTRE_REMORQUE
+                else -> throw RuntimeException("Code [$code] does not exists")
+            }
         }
     }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
 }
