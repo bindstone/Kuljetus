@@ -4,7 +4,7 @@
 
 This is a private POC build for testing the following purposes:
 
-* Reactive Development
+* Reactive Development (include XML read Stream)
 * MongoDB
 * Vaadin
 

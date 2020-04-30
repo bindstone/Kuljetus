@@ -20,7 +20,8 @@ public enum Categorie {
     TRICYCLE("51", "Tricycle"),
     QUADRICYCLE("52", "Quadricycle"),
     QUADRICYCLE_LEGER("53", "Quadricycle léger"),
-    AUTRE_REMORQUE("59", "Autre remorque");
+    AUTRE_REMORQUE("59", "Autre remorque"),
+    UNKNOWN("-1", "ERROR");
 
     private String code;
     private String label;
@@ -84,7 +85,7 @@ public enum Categorie {
             case "59":
                 return AUTRE_REMORQUE;
             default:
-                throw new RuntimeException("Code [" + code + "] does not exists");
+                return UNKNOWN;
         }
     }
 
